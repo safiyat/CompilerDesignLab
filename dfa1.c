@@ -76,7 +76,7 @@ int main()
             str++;
             while(isdigit(*str))
                 str++;
-            while (isspace(*str))
+            while(isspace(*str))
                 str++;
         }
         row++;
