@@ -3,6 +3,7 @@
 #include <ctype.h>
 
 #define DEBUG
+
 int main()
 {
     FILE *fp;
@@ -48,13 +49,15 @@ int main()
     fgets(temp, sizeof(char)*50, fp);
     str = temp;
     i= 0;
+#ifdef DEBUG
+    printf("0FA scanned: %s\n", temp);
+#endif
+
     while(*str != '\0')
     {
         sscanf(str, "%d", &FA[0][i++]);
 #ifdef DEBUG
-        printf("FA scanned: %s\n", temp);
-        printf("Here1, i = %d, *str = %c\n", i, *str);
-        getchar();
+        printf("Here1, i = %d, *str = %c, FA[0][%d] = %d\n", i, *str, i-1, FA[0][i-1]);
 #endif
         str++;
         while(isdigit(*str))
@@ -67,12 +70,15 @@ int main()
     while(!feof(fp))
     {
         fgets(temp, sizeof(char)*50, fp);
-        printf("FA scanned: %s\n", temp);
+        printf("1FA scanned: %s\n", temp);
         str = temp;
         i= 0;
         while(*str != '\0')
         {
             sscanf(str, "%d", &FA[row][i++]);
+#ifdef DEBUG
+		        printf("Here1, i = %d, *str = %c, FA[%d][%d] = %d\n", i, *str, row,  i-1, FA[row][i-1]);
+#endif
             str++;
             while(isdigit(*str))
                 str++;
@@ -94,7 +100,7 @@ int main()
     {
         for(j = 0; j < col; j++)
         {
-            printf("%d\t", FA[row][col]);
+            printf("FA[%d][%d]: %d\t", row, col, FA[i][j]);
         }
         printf("\n");
     }
