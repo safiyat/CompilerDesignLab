@@ -6,9 +6,25 @@ using namespace std;
 
 int main()
 {
-	regexp a("a+b");
-	cout << a.text() << endl;
-	cout << "Hello World!" << endl;
+	string a, t;
+	cout << "Enter the Regular Expression: ";
+	cin >> a;
+	regexp r(a);
+	if(!r.isvalid())
+	{
+		cout << "Invalid Regular Expression!!!" << endl;
+		return -1;
+	}
+	while(true)
+	{
+		cout << "Enter the test string: ";
+		cin >> t;
+		if(t == "end")
+			break;
+		if(r.validate(t))
+			cout << "String is a valid match." << endl;
+		else
+			cout << "String is an invalid match." << endl;
+	}
 	return 0;
 }
-
