@@ -132,7 +132,12 @@ bool regexp::validate(std::string p)
 			case QMARK:		j++;
 							break;
 
-			case KSTAR:		i = goBlockBeg(t, i);
+			case KSTAR:		if(t.length() == (i + 1) && j == p.length())
+							{
+								i++;
+								break;
+							}
+							i = goBlockBeg(t, i);
 							break;
 
 			default:		return false;
@@ -179,7 +184,7 @@ unsigned int regexp::goBlockBeg(std::string p, unsigned int i)
 	if(p[i - 1] == ')')
 	{
 		int parcount = -1;
-		i--;
+		i -= 2;
 		for(; parcount != 0; i--)
 		{
 			if(p[i] == '(')
