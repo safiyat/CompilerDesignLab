@@ -75,7 +75,7 @@ bool regexp::validate(std::string p)
 		else
 		{
 			int parcount = 1;
-			for(j = i - 1; j > 0 && parcount!= 0; j--)
+			for(j = i - 2; j > 0 && parcount!= 0; j--)
 			{
 				if(t[j] == '(')
 					parcount--;
@@ -83,10 +83,11 @@ bool regexp::validate(std::string p)
 					parcount++;
 			}
 			t.replace(i, 1, 1, '*');
-			t.insert(i, t.substr(j, i));
+			std::string temp = t.substr(j+1, i-2);
+			t.insert(i, temp);
 		}
 	}
-	i = 0;
+	i = j = 0;
 	while(i < t.length())
 	{
 		switch(ttype(t[i]))
@@ -113,6 +114,7 @@ bool regexp::validate(std::string p)
 											else if(t[i] == ')')
 												parcount--;
 										}
+										i++;
 									}
 									break;
 								}
@@ -143,8 +145,9 @@ bool regexp::validate(std::string p)
 			default:		return false;
 		}
 	}
-
-	return true;
+	if(i >= t.length() && j >= p.length())
+		return true;
+	return false;
 }
 
 bool regexp::checkAlternate(std::string p, unsigned int j)
@@ -154,7 +157,18 @@ bool regexp::checkAlternate(std::string p, unsigned int j)
 	if(j == 0)
 		return false;
 	if(p[j-1] == '(')
-		return true;
+	{
+		int parcount = 1;
+		for(; parcount != 0; j++)
+		{
+			if(p[j] == '(')
+				parcount++;
+			else if(p[j] == ')')
+				parcount--;
+		}
+		if(p[j] == '*' || p[j] == '|')
+			return true;
+	}
 	return false;
 }
 
@@ -192,6 +206,7 @@ unsigned int regexp::goBlockBeg(std::string p, unsigned int i)
 			else if(p[i] == ')')
 				parcount--;
 		}
+		i++;
 		return i;
 	}
 	i--;
