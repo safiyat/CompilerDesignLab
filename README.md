@@ -8,6 +8,7 @@ List of Programs:
 		A simpe C program.
 
 	0805:	Regular Expression Checker
+		A generic C++ program written using Qt Creator without any library dependency.
 
 Usefuls Links:
 
