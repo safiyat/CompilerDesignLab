@@ -33,6 +33,11 @@ std::string regexp::text()
 	return r;
 }
 
+void regexp::setText(std::string t)
+{
+	r = t;
+}
+
 unsigned int regexp::len()
 {
 	return r.length();
@@ -52,13 +57,16 @@ bool regexp::isvalid()
 		return false;
 	return true;
 }
-
+/*
 bool regexp::validate(char *p)
 {
 	std::string a;
 	a.copy(p, strlen(p));
 	return validate(a);
 }
+
+
+
 
 bool regexp::validate(std::string p)
 {
@@ -211,4 +219,86 @@ unsigned int regexp::goBlockBeg(std::string p, unsigned int i)
 	}
 	i--;
 	return i;
+}
+*/
+
+std::string regexp::normalize()
+{
+	unsigned int i = 0, j = 0;
+
+	std::string t = r;
+
+	while((i = t.find('+', i)) < 4294967294)
+	{
+		if(isalpha(t[i - 1]))
+		{
+			t.insert(i, 1, t[i - 1]);
+			t.replace(i+1, 1, 1, '*');
+		}
+		else
+		{
+			int parcount = 1;
+			for(j = i - 2; j > 0 && parcount!= 0; j--)
+			{
+				if(t[j] == '(')
+					parcount--;
+				else if(t[j] == ')')
+					parcount++;
+			}
+			t.replace(i, 1, 1, '*');
+			std::string temp = t.substr(j+1, i-3);
+			t.insert(i, temp);
+		}
+	}
+	return t;
+}
+
+bool regexp::validate(char *p)
+{
+	std::string a;
+	a.copy(p, strlen(p));
+	return validate(a);
+}
+
+bool regexp::validate(std::string p)
+{
+	return recursiveTest(r, p, 0);
+}
+
+int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
+{
+	int i = 0;
+	unsigned int j_bu = j;
+//	if(subblocks(t))
+	while(i < t.length())
+	{
+		if(t[i] == p[j])
+		{
+			i++;
+			j++;
+		}
+		else if(t[i] == '(')
+		{
+			unsigned int paracount = 1;
+			for(int k = i+1; k < t.length() && paracount; k++)
+			{
+				if(t[k] == '(')
+					paracount++;
+				else if(t[k] == ')')
+					paracount--;
+			}
+			k--;		// t[i]=='(', t[k]==')'
+			if(t[k+1] == '*')
+			{
+				std::string subblock = t.substr(i + 1, k - 1);
+				j = recursiveTest(subblock, p, j);
+			}
+			else
+				continue;
+		}
+		else if(t[i] == '*')
+		{
+
+		}
+	}
 }

@@ -15,6 +15,7 @@ int main()
 		cout << "Invalid Regular Expression!!!" << endl;
 		return -1;
 	}
+/*
 	while(true)
 	{
 		cout << "Enter the test string: ";
@@ -26,5 +27,6 @@ int main()
 		else
 			cout << "String is an invalid match." << endl;
 	}
+*/
 	return 0;
 }
