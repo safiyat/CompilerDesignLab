@@ -264,12 +264,13 @@ bool regexp::validate(std::string p)
 {
 	return recursiveTest(r, p, 0);
 }
-
+/*
 int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
 {
-	int i = 0;
-	unsigned int j_bu = j;
+	unsigned int i = 0, j_bu = j;
+	bool prevStar;
 //	if(subblocks(t))
+	prevStar = false;
 	while(i < t.length())
 	{
 		if(t[i] == p[j])
@@ -279,8 +280,8 @@ int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
 		}
 		else if(t[i] == '(')
 		{
-			unsigned int paracount = 1;
-			for(int k = i+1; k < t.length() && paracount; k++)
+			unsigned int paracount = 1, k;
+			for(k = i+1; k < t.length() && paracount; k++)
 			{
 				if(t[k] == '(')
 					paracount++;
@@ -290,6 +291,7 @@ int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
 			k--;		// t[i]=='(', t[k]==')'
 			if(t[k+1] == '*')
 			{
+				prevStar = true;
 				std::string subblock = t.substr(i + 1, k - 1);
 				j = recursiveTest(subblock, p, j);
 			}
@@ -299,6 +301,75 @@ int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
 		else if(t[i] == '*')
 		{
 
+		}
+	}
+}
+*/
+
+int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
+{
+	unsigned int i = 0, j_bu = j, starCount = 0;
+	bool prevStar = false;
+
+	j = std::string::npos;
+	while((i = t.rfind('*', j)) < 4294967294)
+	{
+		j = i;
+		starCount++;
+		if(t[i - 1] == ')')
+		{
+			int k, paracount = 1;
+			for(k = i-2; k >= 0 && paracount; k--)
+			{
+				if(t[k] == '(')
+					paracount--;
+				else if(t[k] == ')')
+					paracount++;
+			}
+			j = k;
+		}
+		else
+			j--;
+	}
+
+	j = j_bu;
+	i = 0;
+	while(i < t.length())
+	{
+		if(t[i] == p[j])
+		{
+			i++;
+			j++;
+		}
+		else if(t[i] == '*')
+		{
+
+		}
+		else if(t[i] == '(')
+		{
+			unsigned int paracount = 1, k;
+			for(k = i+1; k < t.length() && paracount; k++)
+			{
+				if(t[k] == '(')
+					paracount++;
+				else if(t[k] == ')')
+					paracount--;
+			}
+			k--;		// t[i]=='(', t[k]==')'
+
+			if(t[k+1] == '*')
+			{
+				int temp;
+				prevStar = true;
+				std::string subblock = t.substr(i + 1, k - 1);
+				temp = recursiveTest(subblock, p, j);
+				if(temp == j)
+				{
+
+				}
+			}
+			else
+				continue;
 		}
 	}
 }

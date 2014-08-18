@@ -15,6 +15,7 @@ int main()
 		cout << "Invalid Regular Expression!!!" << endl;
 		return -1;
 	}
+	r.validate("asd");
 /*
 	while(true)
 	{
