@@ -7,20 +7,22 @@ struct transition;
 
 class state
 {
+		static int sCount;
+		bool finalState;
 		int tCount;
 		struct transition *transitionTable;
 	public:
+		state();
 		char transit(std::string);
 		void populate(std::ifstream &);
+		bool isFinalState();
 };
 
 struct globalRef
 {
 	char stateName;
 	state *addr;
-}*refTable = NULL;
-
-state *current = NULL, *next = NULL;
+};
 
 struct transition
 {
