@@ -12,7 +12,7 @@ class regexp
 		bool checkAlternate(std::string, unsigned int);
 		unsigned int skipBlock(std::string, unsigned int);
 		unsigned int goBlockBeg(std::string, unsigned int);
-		int recursiveTest(std::string, std::string, unsigned int);
+		int recursiveTest(std::string, std::string);
 		std::string normalize();
 	public:
 		regexp();

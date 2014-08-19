@@ -306,9 +306,9 @@ int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
 }
 */
 
-int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
+int regexp::recursiveTest(std::string t, std::string p)
 {
-	unsigned int i = 0, j_bu = j, starCount = 0;
+	unsigned int i = 0, j, starCount = 0;
 	bool prevStar = false;
 
 	j = std::string::npos;
@@ -332,8 +332,7 @@ int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
 			j--;
 	}
 
-	j = j_bu;
-	i = 0;
+	i = j = 0;
 	while(i < t.length())
 	{
 		if(t[i] == p[j])
@@ -343,7 +342,8 @@ int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
 		}
 		else if(t[i] == '*')
 		{
-
+            if(t[i-1] == ')')
+                
 		}
 		else if(t[i] == '(')
 		{
@@ -362,7 +362,7 @@ int regexp::recursiveTest(std::string t, std::string p, unsigned int j)
 				int temp;
 				prevStar = true;
 				std::string subblock = t.substr(i + 1, k - 1);
-				temp = recursiveTest(subblock, p, j);
+				temp = recursiveTest(subblock, p.substr(j));
 				if(temp == j)
 				{
 
