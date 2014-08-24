@@ -12,7 +12,7 @@
  * ~ denotes an absent transition.
  *
  * The input symbols start from 'a', beginning with the first column. The
- * second column denotes transitions on the imput symbol 'b'.
+ * second column denotes transitions on the input symbol 'b'.
  *
  * The first tuple will always give transitions from the initial state.
  * Each final state is denoted by an 'F' at the end of the tuple.

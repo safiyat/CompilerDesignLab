@@ -55,6 +55,14 @@ bool regexp::isvalid()
 		return false;
 	if(strstr(r.data(), "(*"))
 		return false;
+	if(strstr(r.data(), "**"))
+		return false;
+	if(strstr(r.data(), "*+"))
+		return false;
+	if(strstr(r.data(), "+*"))
+		return false;
+	if(strstr(r.data(), "++"))
+		return false;
 	return true;
 }
 /*
@@ -342,8 +350,8 @@ int regexp::recursiveTest(std::string t, std::string p)
 		}
 		else if(t[i] == '*')
 		{
-            if(t[i-1] == ')')
-                
+			if(t[i-1] == ')')
+
 		}
 		else if(t[i] == '(')
 		{

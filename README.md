@@ -19,10 +19,15 @@ List of Programs:
 		A generic C++ program written using Qt Creator without any library dependency. Incorporates recursion for RegExp checking.
 		Status: Incomplete.
 
-	0819:
+	0819-1:
 		Mealy Machine
 		A generic C++ program written using Qt Creator without any library dependency.
 		Status: Complete. Testing and feedback required.
+
+	0819-2:
+		Moore Machine
+                A generic C++ program written using Qt Creator without any library dependency.
+                Status: Complete. Testing and feedback required.
 
 Useful Links:
 
