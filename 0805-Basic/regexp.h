@@ -7,11 +7,13 @@
 class regexp
 {
 		std::string r;
-		enum TTYPE {OPERAND, OPARA, CPARA, BOOLOR, QMARK, KSTAR, KPLUS, ERROR};
+		enum TTYPE {OPERAND, OPARA, CPARA, BOOLOR, QMARK, KSTAR, OR, CONCAT, ERROR};
 		TTYPE ttype(char);
-		bool checkAlternate(std::string, unsigned int);
-		unsigned int skipBlock(std::string, unsigned int);
-		unsigned int goBlockBeg(std::string, unsigned int);
+		std::string normalize();
+		int getClosingPara(std::string, int);
+		int goBlockBeg(std::string, int);
+		int goBlockEnd(std::string, int);
+		bool recursiveCheck(std::string, std::string);
 	public:
 		regexp();
 		regexp(std::string);

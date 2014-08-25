@@ -24,8 +24,123 @@ regexp::TTYPE regexp::ttype(char p)
 	if(p == '*')
 		return KSTAR;
 	if(p == '+')
-		return KPLUS;
+		return OR;
+	if(p == '.')
+		return CONCAT;
 	return ERROR;
+}
+
+std::string regexp::normalize()
+{
+	int i = 0;
+	std::string p = r;
+	while(i < p.length())
+	{
+		if(p[i] == '*')
+		{
+			if(p[i-1] == ')')
+			{
+				i++;
+				continue;
+			}
+			p.insert(i, 1, ')');
+			p.insert(i-1, 1, '(');
+		}
+		else if(p[i] == '+')
+		{
+			if(p[i-1] != ')') //Pre '+' part
+			{
+				p.insert(i, 1, ')');
+				int j = goBlockBeg(p, i-1);
+				p.insert(j, 1, '(');
+				i+=2;
+			}
+			if(p[i+1] != '(')
+			{
+				i++;
+				p.insert(i, 1, '(');
+				int j = goBlockEnd(p, i+1);
+				if(j+1 < p.length())
+					p.insert(j+1, 1, ')');
+				else
+					p.append(")");
+				i--;
+			}
+		}
+		i++;
+	}
+	return p;
+}
+
+int regexp::getClosingPara(std::string p, int i)
+{
+	int retVal = -1;
+	if(p[i]=='(')
+	{
+		int parCount = 1;
+		for(i++; i < p.length(); i++)
+		{
+			if(p[i]=='(')
+				parCount++;
+			else if(p[i]==')')
+				parCount--;
+			if(!parCount)
+				break;
+		}
+		retVal = i;
+	}
+	else if(p[i]==')')
+	{
+		int parCount = 1;
+		for(i--; i > 0; i--)
+		{
+			if(p[i]=='(')
+				parCount--;
+			else if(p[i]==')')
+				parCount++;
+			if(!parCount)
+				break;
+		}
+		retVal = i;
+	}
+	return retVal;
+}
+
+int regexp::goBlockBeg(std::string p, int i)
+{
+	if(p[i] == ')')
+		return getClosingPara(p, i);
+	while(i > 0)
+	{
+		if(p[i] == '(')
+			return i;
+		if(p[i] == ')')
+		{
+			i = getClosingPara(p, i);
+			continue;
+		}
+		i--;
+	}
+	return i;
+}
+
+int regexp::goBlockEnd(std::string p, int i)
+{
+	if(p[i] == '(')
+		return getClosingPara(p, i);
+	while(i < p.length())
+	{
+		if(p[i] == ')')
+			return i;
+		if(p[i] == '(')
+		{
+			i = getClosingPara(p, i);
+			i++;
+			continue;
+		}
+		i++;
+	}
+	return i;
 }
 
 std::string regexp::text()
@@ -62,153 +177,69 @@ bool regexp::validate(char *p)
 
 bool regexp::validate(std::string p)
 {
-	std::string t = r;
-	unsigned int i = 0, j = 0;
-
-	while((i = t.find('+', i)) < 4294967294)
-	{
-		if(isalpha(t[i - 1]))
-		{
-			t.insert(i, 1, t[i - 1]);
-			t.replace(i+1, 1, 1, '*');
-		}
-		else
-		{
-			int parcount = 1;
-			for(j = i - 2; j > 0 && parcount!= 0; j--)
-			{
-				if(t[j] == '(')
-					parcount--;
-				else if(t[j] == ')')
-					parcount++;
-			}
-			t.replace(i, 1, 1, '*');
-			std::string temp = t.substr(j+1, i-2);
-			t.insert(i, temp);
-		}
-	}
-	i = j = 0;
-	while(i < t.length())
-	{
-		switch(ttype(t[i]))
-		{
-			case OPERAND:	if(t[i] == p[j])
-							{
-								i++;
-								j++;
-								break;
-							}
-							else
-							{
-								if(checkAlternate(t, i))
-								{
-									if(t[i+1] == '+' || t[i+1] == '*' || t[i+1] == '|')
-										i += 2;
-									else
-									{
-										int parcount = 1;
-										for(; parcount != 0; i++)
-										{
-											if(t[i] == '(')
-												parcount++;
-											else if(t[i] == ')')
-												parcount--;
-										}
-										i++;
-									}
-									break;
-								}
-							}
-							return false;
-
-			case OPARA:		i++;
-							break;
-
-			case CPARA:		i++;
-							break;
-
-			case BOOLOR:	i++;
-							i = skipBlock(t, i);
-							break;
-
-			case QMARK:		j++;
-							break;
-
-			case KSTAR:		if(t.length() == (i + 1) && j == p.length())
-							{
-								i++;
-								break;
-							}
-							i = goBlockBeg(t, i);
-							break;
-
-			default:		return false;
-		}
-	}
-	if(i >= t.length() && j >= p.length())
-		return true;
-	return false;
+	std::string t = normalize();
+	std::cout << "Normalized: " << t << std::endl;
+	return recursiveCheck(t, p);
 }
 
-bool regexp::checkAlternate(std::string p, unsigned int j)
+bool regexp::recursiveCheck(std::string t, std::string p)
 {
-	if(p[j+1] == '+' || p[j+1] == '*' || p[j+1] == '|')
+	int t_i = 0, p_i = 0;
+
+	while(t_i < t.length())
+	{
+		switch(ttype(t[t_i]))
+		{
+			case OPERAND:
+				if(p[p_i] == t[t_i])
+				{
+					p_i++;
+					t_i++;
+					break;
+				}
+				else
+					return false;
+			case OPARA:
+				if(recursiveCheck(t.substr(t_i+1), p.substr(p_i)) == false)
+				{
+					t_i = goBlockEnd(t, t_i) + 1;
+					if(t[t_i] == '*' || t[t_i] == '+')
+						return recursiveCheck(t.substr(t_i + 1), p.substr(p_i));
+				}
+				if(p_i >= p.length() && t_i >= t.length())
+					return true;
+				else
+					return false;
+			case CPARA:
+				if(t[t_i + 1] == '*')
+				{
+					int temp = t_i + 2;
+					int temp2 = goBlockBeg(t, t_i);
+					if(recursiveCheck(t.substr(temp2), p.substr(p_i)) == false)
+					{
+						if(temp < t.length())
+							return recursiveCheck(t.substr(temp), p.substr(p_i));
+						return false;
+					}
+					if(p_i >= p.length() && t_i >= t.length())
+						return true;
+					else
+						return false;
+				}
+				else if(t[t_i + 1] == '+')
+				{
+					t_i = goBlockEnd(t, t_i + 2);
+				}
+				else
+					t_i++;
+				break;
+			case CONCAT:
+				t_i++;
+				continue;
+		}
+	}
+	if(p_i >= p.length() && t_i >= t.length())
 		return true;
-	if(j == 0)
+	else
 		return false;
-	if(p[j-1] == '(')
-	{
-		int parcount = 1;
-		for(; parcount != 0; j++)
-		{
-			if(p[j] == '(')
-				parcount++;
-			else if(p[j] == ')')
-				parcount--;
-		}
-		if(p[j] == '*' || p[j] == '|')
-			return true;
-	}
-	return false;
-}
-
-unsigned int regexp::skipBlock(std::string p, unsigned int i)
-{
-	if(p[i] == '(')
-	{
-		int parcount = 1;
-		i++;
-		for(; parcount != 0; i++)
-		{
-			if(p[i] == '(')
-				parcount++;
-			else if(p[i] == ')')
-				parcount--;
-		}
-		return i;
-	}
-	i++;
-	while(!isalpha(p[i]))
-		i++;
-	return i;
-}
-
-unsigned int regexp::goBlockBeg(std::string p, unsigned int i)
-{
-	if(p[i - 1] == ')')
-	{
-		int parcount = -1;
-		i -= 2;
-		for(; parcount != 0; i--)
-		{
-			if(p[i] == '(')
-				parcount++;
-			else if(p[i] == ')')
-				parcount--;
-		}
-		i++;
-		return i;
-	}
-	i--;
-	return i;
 }

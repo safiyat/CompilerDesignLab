@@ -10,6 +10,7 @@ int main()
 	cout << "Enter the Regular Expression: ";
 	cin >> a;
 	regexp r(a);
+
 	if(!r.isvalid())
 	{
 		cout << "Invalid Regular Expression!!!" << endl;
@@ -26,5 +27,7 @@ int main()
 		else
 			cout << "String is an invalid match." << endl;
 	}
+
+//	r.validate("asfdf");
 	return 0;
 }
