@@ -32,4 +32,4 @@ List of Programs:
 Useful Links:
 
 	Regular Expressions: http://www.cs.princeton.edu/courses/archive/spr09/cos333/beautiful.html
-	Mealy Machine, Moore Machine: http://www.cs.umd.edu/class/spring2003/cmsc311/Notes/Seq/impl.html
+	Mealy Machine & Moore Machine: http://www.cs.umd.edu/class/spring2003/cmsc311/Notes/Seq/impl.html
