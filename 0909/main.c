@@ -55,6 +55,7 @@ int main()
 #endif
     FA = (char ***) malloc(sizeof(char **)*1);
     FA[0] = NULL;
+    i = 0;
     while(*str != '\0')
     {
     	FA[0] = (char **)realloc(FA[0], sizeof(char *)*(i+1));
