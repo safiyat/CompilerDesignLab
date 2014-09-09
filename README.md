@@ -19,6 +19,11 @@ List of Programs:
 		A generic C++ program written using Qt Creator without any library dependency. Incorporates recursion for RegExp checking.
 		Status: Incomplete.
 
+	0805-Test:
+		Regular Expression Checker - Test Version
+		A generic C++ program written using Xcode  without any library dependency. Satisfies the regular expressions given in the test.
+                Status: Complete.
+
 	0819-1:
 		Mealy Machine
 		A generic C++ program written using Qt Creator without any library dependency.
